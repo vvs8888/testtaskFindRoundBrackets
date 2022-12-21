@@ -1,20 +1,26 @@
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FindValidRoundBrackets {
+    private static final Pattern pattern = Pattern.compile("[()]*");
 
     public static void main(String[] args) {
 
         try (Scanner scanner = new Scanner(System.in)) {
             String sequence;
+            Matcher matcher;
+
             do {
                 System.out.print("Введите последовательность из круглых скобок для поиска валидных: ");
                 sequence = scanner.nextLine();
                 sequence = sequence.replaceAll("\\s+", "").trim(); // уберем лишние пробелы
 
-                if (!sequence.matches("[()]*")) // проверим, что строка состоит только из круглых скобок
+                matcher = pattern.matcher(sequence);
+                if (!matcher.matches()) // проверим, что строка состоит только из круглых скобок
                     System.out.println("Введённая строка имеет символы отличные от '(' и ')'.");
-            } while (!sequence.matches("[()]*"));
+            } while (!matcher.matches());
 
             String mode;
             do {
@@ -26,19 +32,27 @@ public class FindValidRoundBrackets {
         }
     }
 
-    public static void FindValidBrackets(String sequence, String mode) {
+    private static void FindValidBrackets(String sequence, String mode) {
 
         final int firstValidBracketPosition = sequence.indexOf("("); // если ни одной открывающей - дальше не ищем
+
         if (firstValidBracketPosition == -1) {
             System.out.println("0");
             return;
         }
+
+        // если есть открывающа скобка, тогда ищем по алгоритму
+        PrintResult( FillResult( FillStack(sequence, mode, firstValidBracketPosition) ), mode );
+    }
+
+    private static Stack<Character> FillStack(String sequence, String mode, int firstValidBracketPosition) {
 
         Stack<Character> stack = new Stack<>();
         int level = 0; // открывающая скобка - увеличиваем, закрывающая - уменьшаем
 
         for (int i = firstValidBracketPosition; i < sequence.length(); i++) {
             char c = sequence.charAt(i);
+
             if (c == '(') {
                 stack.push(c);
                 level++;
@@ -53,8 +67,14 @@ public class FindValidRoundBrackets {
             }
         }
 
+        return stack;
+    }
+
+    private static String FillResult(Stack<Character> stack) {
+
         StringBuilder result = new StringBuilder();
-        level = 0;
+        int level = 0;
+
         while (!stack.isEmpty()) { // просмотрим строку в обратную сторону
             char c = stack.pop();
             if (c == ' ') {
@@ -71,8 +91,13 @@ public class FindValidRoundBrackets {
             }
         }
 
-        // перевернём строку, удалим лишние пробелы и разделим на последовательности
-        String[] words = result.reverse().toString().replaceAll("\\s+", " ").trim().split(" ");
+        return result.reverse().toString().replaceAll("\\s+", " ").trim(); // перевернём строку и удалим лишние пробелы
+    }
+
+    private static void PrintResult(String sequence, String mode) {
+
+        String[] words = sequence.split(" "); // разделим на последовательности
+
         for (String word : words) {
             if (word.length() == 0)
                 System.out.println("0");
