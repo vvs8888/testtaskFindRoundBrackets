@@ -18,8 +18,9 @@ public class FindValidRoundBrackets {
                 sequence = sequence.replaceAll("\\s+", "").trim(); // уберем лишние пробелы
 
                 matcher = pattern.matcher(sequence);
-                if (!matcher.matches()) // проверим, что строка состоит только из круглых скобок
+                if (!matcher.matches()) {// проверим, что строка состоит только из круглых скобок
                     System.out.println("Введённая строка имеет символы отличные от '(' и ')'.");
+                }
             } while (!matcher.matches());
 
             String mode;
@@ -28,11 +29,11 @@ public class FindValidRoundBrackets {
                 mode = scanner.nextLine();
             } while (!"first".equalsIgnoreCase(mode) && !"all".equalsIgnoreCase(mode));
 
-            FindValidBrackets(sequence, mode);
+            findValidBrackets(sequence, mode);
         }
     }
 
-    private static void FindValidBrackets(String sequence, String mode) {
+    private static void findValidBrackets(String sequence, String mode) {
 
         final int firstValidBracketPosition = sequence.indexOf("("); // если ни одной открывающей - дальше не ищем
 
@@ -41,11 +42,11 @@ public class FindValidRoundBrackets {
             return;
         }
 
-        // если есть открывающа скобка, тогда ищем по алгоритму
-        PrintResult( FillResult( FillStack(sequence, mode, firstValidBracketPosition) ), mode );
+        // если есть открывающая скобка, тогда ищем по алгоритму
+        printResult( fillResult( fillStack(sequence, mode, firstValidBracketPosition) ), mode );
     }
 
-    private static Stack<Character> FillStack(String sequence, String mode, int firstValidBracketPosition) {
+    private static Stack<Character> fillStack(String sequence, String mode, int firstValidBracketPosition) {
 
         Stack<Character> stack = new Stack<>();
         int level = 0; // открывающая скобка - увеличиваем, закрывающая - уменьшаем
@@ -60,8 +61,9 @@ public class FindValidRoundBrackets {
                 if ("all".equalsIgnoreCase(mode)) {
                     stack.push(' '); // меняем некорректную скобку на пробел для сплита
                     level++; // восстанавливаем level для дальнейшего поиска
-                } else // если нужна только первая, то после лишней закрывающей ничего не ищем
+                } else {// если нужна только первая, то после лишней закрывающей ничего не ищем
                     break;
+                }
             } else {
                 stack.push(c);
             }
@@ -70,7 +72,7 @@ public class FindValidRoundBrackets {
         return stack;
     }
 
-    private static String FillResult(Stack<Character> stack) {
+    private static String fillResult(Stack<Character> stack) {
 
         StringBuilder result = new StringBuilder();
         int level = 0;
@@ -86,25 +88,29 @@ public class FindValidRoundBrackets {
                 if (level > 0) {
                     result.append(c);
                     level--;
-                } else
+                } else {
                     result.append(' '); // меняем некорректную скобку на пробел для сплита
+                }
             }
         }
 
         return result.reverse().toString().replaceAll("\\s+", " ").trim(); // перевернём строку и удалим лишние пробелы
     }
 
-    private static void PrintResult(String sequence, String mode) {
+    private static void printResult(String sequence, String mode) {
 
         String[] words = sequence.split(" "); // разделим на последовательности
 
         for (String word : words) {
-            if (word.length() == 0)
+            if (word.length() == 0) {
                 System.out.println("0");
-            else
+            }
+            else {
                 System.out.printf("%d - %s%n", word.length(), word);
-            if ("first".equalsIgnoreCase(mode))
+            }
+            if ("first".equalsIgnoreCase(mode)) {
                 break;
+            }
         }
     }
 }
